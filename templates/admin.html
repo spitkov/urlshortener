@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <title>Admin Panel</title>
+    <style>
+        body {
+            background-color: #212529; /* Dark background */
+            height: 100vh; /* Full height */
+            display: flex; /* Flexbox for centering */
+            flex-direction: column; /* Stack elements vertically */
+        }
+        .content {
+            flex: 1; /* Allow content to grow and fill space */
+            display: flex; /* Flexbox for centering */
+            align-items: center; /* Center vertically */
+            justify-content: center; /* Center horizontally */
+        }
+    </style>
+</head>
+<body class="text-light">
+    <!-- Include Navbar -->
+    {% include 'navbar.html' %}
+
+    <div class="content">
+        <div class="container text-center">
+            {% if not session.get('admin') %}
+                <form method="POST" class="mb-3">
+                    <input type="password" name="password" placeholder="Enter Password" required class="form-control mb-2">
+                    <button type="submit" class="btn btn-primary">Login</button>
+                </form>
+            {% else %}
+                <h2>URLs</h2>
+                {% if urls %}
+                    <ul class="list-unstyled">
+                        {% for url in urls %}
+                            <li class="mb-3">
+                                <div class="card bg-dark text-light">
+                                    <div class="card-body">
+                                        <h5 class="card-title">{{ url.original_url }}</h5>
+                                        <p class="card-text">Short URL: <a href="{{ url_for('redirect_to_url', short_url=url.short_url) }}">{{ request.host_url }}{{ url.short_url }}</a></p>
+                                        <a href="{{ url_for('delete_url', url_id=url.id) }}" class="btn btn-danger">Delete</a>
+                                    </div>
+                                </div>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p>No URLs found.</p>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

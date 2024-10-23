@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <title>URL Shortener</title>
+    <style>
+        body {
+            background-color: #212529; /* Dark background */
+            height: 100vh; /* Full height */
+            display: flex; /* Flexbox for centering */
+            flex-direction: column; /* Stack elements vertically */
+        }
+    </style>
+</head>
+<body class="text-light">
+    <!-- Include Navbar -->
+    {% include 'navbar.html' %}
+
+    <div class="container text-center flex-grow-1 d-flex align-items-center justify-content-center">
+        <div class="w-100">
+            <h1>URL Shortener</h1>
+            <form method="POST" class="mb-3">
+                <input type="text" name="url" placeholder="Enter URL" required class="form-control mb-2">
+                <input type="text" name="vanity" placeholder="Custom Vanity (optional)" class="form-control mb-2"> <!-- Custom vanity input -->
+                <div class="d-flex justify-content-center">
+                    <button type="submit" class="btn btn-primary btn-sm">Shorten</button>
+                </div>
+            </form>
+            
+            {% if short_url %}
+                <p class="mt-3">Short URL: <a href="{{ url_for('redirect_to_url', short_url=short_url) }}">{{ request.host_url }}{{ short_url }}</a></p>
+            {% endif %}
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
