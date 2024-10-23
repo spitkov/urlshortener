@@ -1,32 +1,28 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-6">
-        <h2 class="mb-4">Shorten Your URL</h2>
-        <form method="POST">
-            <div class="mb-3">
-                <label for="url" class="form-label">Enter URL to shorten</label>
-                <input type="text" class="form-control bg-dark text-light" id="url" name="url" required>
-            </div>
-            <div class="mb-3">
-                <button type="button" class="btn btn-link text-info p-0" id="show-options">More options</button>
-            </div>
-            <div class="mb-3 d-none" id="vanity-option">
-                <label for="vanity" class="form-label">Custom short URL (optional)</label>
-                <input type="text" class="form-control bg-dark text-light" id="vanity" name="vanity">
-            </div>
-            <button type="submit" class="btn btn-primary">Shorten</button>
-        </form>
-        {% if short_url %}
-        <div class="mt-4">
-            <h3>Your shortened URL:</h3>
-            <a href="{{ url_for('redirect_to_url', short_url=short_url, _external=True) }}" class="text-info">
-                {{ url_for('redirect_to_url', short_url=short_url, _external=True) }}
-            </a>
+<div class="box">
+    <h2>Shorten Your URL</h2>
+    <form method="POST">
+        <div class="mb-3">
+            <input type="text" class="form-control" id="url" name="url" placeholder="Enter URL to shorten" required>
         </div>
-        {% endif %}
+        <div class="mb-3">
+            <button type="button" class="btn btn-link text-info p-0" id="show-options">More options</button>
+        </div>
+        <div class="mb-3 d-none" id="vanity-option">
+            <input type="text" class="form-control" id="vanity" name="vanity" placeholder="Custom short URL (optional)">
+        </div>
+        <button type="submit" class="btn">Shorten</button>
+    </form>
+    {% if short_url %}
+    <div class="mt-4">
+        <h3>Your shortened URL:</h3>
+        <a href="{{ url_for('redirect_to_url', short_url=short_url, _external=True) }}" class="text-info">
+            {{ url_for('redirect_to_url', short_url=short_url, _external=True) }}
+        </a>
     </div>
+    {% endif %}
 </div>
 {% endblock %}
 

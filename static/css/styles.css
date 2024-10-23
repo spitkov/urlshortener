@@ -1,90 +1,178 @@
-body {
-    background-color: #212529;
-    color: #ffffff;
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
-input {
-    margin: 5px;
+body {
+    min-height: 100vh;
+    width: 100vw;
+    display: flex;
+    flex-direction: column;
+    color: white;
+    font-family: "Roboto", sans-serif;
+    font-size: 16px;
+    font-weight: 300;
+    background: linear-gradient(-45deg, #5d2cf3, #3c4de7, #8204c5, #1800a2);
+    background-size: 400% 400%;
+    animation: gradient 20s ease infinite;
+    overflow-x: hidden;
+}
+
+.container {
+    width: 100%;
+    max-width: 1400px;
+    padding: 0 15px;
+    margin: 0 auto;
+}
+
+h2 {
+    font-size: 28px;
+    margin-bottom: 20px;
+    font-weight: 500;
+}
+
+input, .form-control {
+    font-size: 18px;
+    background-color: rgba(11, 11, 11, 0.15);
+    border: none;
+    border-radius: 5px;
+    width: 100%;
+    backdrop-filter: blur(8px);
+    color: white;
+    text-align: center;
+    transition: background-color 0.3s;
+    padding: 12px;
+    margin-bottom: 15px;
+}
+
+input:hover, .form-control:hover {
+    background-color: rgba(26, 26, 26, 0.41);
+}
+
+.btn {
+    background-color: rgba(11, 11, 11, 0.25);
+    width: auto;
+    padding: 10px 20px;
+    border-radius: 5px;
+    transition: transform 0.1s, background-color 0.3s;
+    font-size: 18px;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+.btn:hover {
+    background-color: rgba(26, 26, 26, 0.41);
+}
+
+.btn:active {
+    transform: scale(0.98);
+}
+
+.box {
+    display: flex;
+    background-color: rgba(0, 0, 0, 0.27);
+    width: 100%;
+    max-width: 1200px;
+    padding: 40px;
+    border-radius: 15px;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 20px;
+    backdrop-filter: blur(10px);
+    margin: 40px auto;
 }
 
 .navbar {
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    background-color: rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(10px);
+    padding: 15px 0;
+    width: 100%;
 }
 
-.card {
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    transition: all 0.3s ease;
-}
-
-.card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+.navbar-brand, .nav-link {
+    color: white !important;
+    font-size: 18px;
 }
 
 .table {
-    color: #ffffff;
+    background-color: rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(10px);
+    color: white;
+    font-size: 16px;
 }
 
-.form-control {
-    background-color: #343a40;
-    color: #ffffff;
-    border-color: #495057;
-}
-
-.form-control:focus {
-    background-color: #454d55;
-    color: #ffffff;
-    border-color: #86b7fe;
-    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
-}
-
-.btn-primary {
-    background-color: #0d6efd;
-    border-color: #0d6efd;
-}
-
-.btn-primary:hover {
-    background-color: #0b5ed7;
-    border-color: #0a58ca;
-}
-
-.btn-secondary {
-    background-color: #6c757d;
-    border-color: #6c757d;
-}
-
-.btn-secondary:hover {
-    background-color: #5c636a;
-    border-color: #565e64;
+.table th, .table td {
+    padding: 15px;
 }
 
 .alert {
-    background-color: #343a40;
-    border-color: #454d55;
+    background-color: rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(10px);
+    color: white;
+    border: none;
+    font-size: 16px;
 }
 
-.alert-success {
-    color: #75b798;
-    background-color: #051b11;
-    border-color: #0f5132;
+.nav-tabs .nav-link {
+    color: white;
+    background-color: rgba(0, 0, 0, 0.2);
+    border: none;
+    font-size: 18px;
 }
 
-.alert-danger {
-    color: #ea868f;
-    background-color: #2c0b0e;
-    border-color: #842029;
+.nav-tabs .nav-link.active {
+    color: white;
+    background-color: rgba(0, 0, 0, 0.4);
+    border: none;
 }
 
-.alert-warning {
-    color: #ffda6a;
-    background-color: #332701;
-    border-color: #997404;
+@keyframes gradient {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
 }
 
-a {
-    color: #0d6efd;
+/* Responsive adjustments */
+@media (max-width: 992px) {
+    .box {
+        width: 95%;
+        padding: 30px;
+    }
+
+    input, .form-control, .btn {
+        font-size: 16px;
+    }
 }
 
-a:hover {
-    color: #0a58ca;
+@media (max-width: 768px) {
+    body {
+        font-size: 14px;
+    }
+
+    h2 {
+        font-size: 24px;
+    }
+
+    .box {
+        padding: 20px;
+    }
+
+    input, .form-control, .btn {
+        font-size: 14px;
+    }
+
+    .navbar-brand, .nav-link {
+        font-size: 16px;
+    }
 }
