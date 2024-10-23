@@ -2,6 +2,7 @@
 
 {% block content %}
 <div class="box">
+    <h2>Welcome back, {{ session.username }}!</h2>
     <ul class="nav nav-tabs mb-4" id="myTab" role="tablist">
         <li class="nav-item" role="presentation">
             <button class="nav-link active" id="urls-tab" data-bs-toggle="tab" data-bs-target="#urls" type="button" role="tab" aria-controls="urls" aria-selected="true">Your URLs</button>
@@ -12,7 +13,7 @@
     </ul>
     <div class="tab-content" id="myTabContent">
         <div class="tab-pane fade show active" id="urls" role="tabpanel" aria-labelledby="urls-tab">
-            <h2>Your URLs</h2>
+            <h3>Your URLs</h3>
             <div class="table-responsive">
                 <table class="table table-hover">
                     <thead>
@@ -38,16 +39,29 @@
             </div>
         </div>
         <div class="tab-pane fade" id="sharex" role="tabpanel" aria-labelledby="sharex-tab">
-            <h2>ShareX Configuration</h2>
+            <h3>ShareX Configuration</h3>
             <div class="mb-3">
                 <label for="api-key" class="form-label">Your API Key:</label>
-                <input type="text" class="form-control" id="api-key" value="{{ api_key }}" readonly>
+                <div class="api-key-container">
+                    <input type="text" class="form-control api-key-input" id="api-key" value="{{ api_key }}" readonly>
+                </div>
             </div>
             <div class="mb-3">
-                <a href="{{ url_for('reset_api_key') }}" class="btn">Reset API Key</a>
+                <a href="#" class="btn" id="reset-api-key">Reset API Key</a>
                 <a href="{{ url_for('download_sharex_config') }}" class="btn">Download ShareX Config</a>
             </div>
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.getElementById('reset-api-key').addEventListener('click', function(e) {
+    e.preventDefault();
+    if (confirm('Are you sure you want to reset your API key? You will need to re-download and update your ShareX configuration after resetting.')) {
+        window.location.href = "{{ url_for('reset_api_key') }}";
+    }
+});
+</script>
 {% endblock %}

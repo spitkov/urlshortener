@@ -1,17 +1,16 @@
 from flask import Flask, request, redirect, render_template, url_for, session, flash, jsonify
 from flask_sqlalchemy import SQLAlchemy
-from werkzeug.security import generate_password_hash, check_password_hash
+from flask_migrate import Migrate
+from functools import wraps
 import string
 import random
-from functools import wraps
 import os
-import hashlib
 import uuid
 import json
-from flask_migrate import Migrate
+import hashlib
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'your_secret_key'  # Use a strong, random secret key in production
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'fallback_secret_key')
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///urls.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
@@ -25,19 +24,34 @@ class User(db.Model):
 
     def set_password(self, password):
         salt = os.urandom(32)
-        self.password_hash = hashlib.pbkdf2_hmac('sha256', password.encode('utf-8'), salt, 100000).hex() + ':' + salt.hex()
+        key = hashlib.pbkdf2_hmac('sha256', password.encode('utf-8'), salt, 100000)
+        self.password_hash = salt.hex() + ':' + key.hex()
 
     def check_password(self, password):
-        stored_hash, salt = self.password_hash.split(':')
-        computed_hash = hashlib.pbkdf2_hmac('sha256', password.encode('utf-8'), bytes.fromhex(salt), 100000).hex()
-        return stored_hash == computed_hash
+        salt, key = self.password_hash.split(':')
+        return key == hashlib.pbkdf2_hmac('sha256', password.encode('utf-8'), bytes.fromhex(salt), 100000).hex()
 
 class URL(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     original_url = db.Column(db.String(500), nullable=False)
     short_url = db.Column(db.String(10), unique=True, nullable=False)
+    password_hash = db.Column(db.String(200))
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     user = db.relationship('User', backref=db.backref('urls', lazy=True))
+
+    def set_password(self, password):
+        if password:
+            salt = os.urandom(32)
+            key = hashlib.pbkdf2_hmac('sha256', password.encode('utf-8'), salt, 100000)
+            self.password_hash = salt.hex() + ':' + key.hex()
+        else:
+            self.password_hash = None
+
+    def check_password(self, password):
+        if self.password_hash:
+            salt, key = self.password_hash.split(':')
+            return key == hashlib.pbkdf2_hmac('sha256', password.encode('utf-8'), bytes.fromhex(salt), 100000).hex()
+        return True
 
 def generate_short_url(length=6):
     characters = string.ascii_letters + string.digits
@@ -50,7 +64,6 @@ def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if 'user_id' not in session:
-            flash('Please log in to access this page.', 'warning')
             return redirect(url_for('login', next=request.url))
         return f(*args, **kwargs)
     return decorated_function
@@ -58,30 +71,20 @@ def login_required(f):
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
-        original_url = request.form['url']
-        custom_vanity = request.form.get('vanity')
-        
-        # Add protocol if it's missing
-        if not original_url.startswith(('http://', 'https://')):
-            original_url = 'https://' + original_url
-        
-        if custom_vanity:
-            if URL.query.filter_by(short_url=custom_vanity).first():
-                flash('Custom vanity URL is already in use. Please choose another one.', 'danger')
-                return render_template('index.html')
-            short_url = custom_vanity
-        else:
-            short_url = generate_short_url()
-        
-        new_url = URL(original_url=original_url, short_url=short_url, user_id=session.get('user_id', 1))
-        db.session.add(new_url)
-        db.session.commit()
-        return render_template('index.html', short_url=short_url)
+        user = User.query.get(session.get('user_id')) if 'user_id' in session else None
+        return create_short_url(request.form, user)
     return render_template('index.html')
 
-@app.route('/<short_url>')
+@app.route('/<short_url>', methods=['GET', 'POST'])
 def redirect_to_url(short_url):
     url = URL.query.filter_by(short_url=short_url).first_or_404()
+    if url.password_hash:
+        if request.method == 'POST':
+            if url.check_password(request.form.get('password')):
+                return redirect(url.original_url)
+            else:
+                flash('Incorrect password', 'danger')
+        return render_template('password_prompt.html', short_url=short_url)
     return redirect(url.original_url)
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -99,7 +102,6 @@ def register():
         db.session.add(new_user)
         db.session.commit()
         
-        # Automatically log in the user
         session['user_id'] = new_user.id
         session['username'] = new_user.username
         
@@ -127,7 +129,7 @@ def login():
 @login_required
 def dashboard():
     user = User.query.get(session['user_id'])
-    user_urls = URL.query.filter_by(user_id=session['user_id']).all()
+    user_urls = URL.query.filter_by(user_id=user.id).all()
     return render_template('dashboard.html', urls=user_urls, api_key=user.api_key)
 
 @app.route('/delete/<int:url_id>')
@@ -160,6 +162,7 @@ def edit_url(url_id):
     if request.method == 'POST':
         original_url = request.form['original_url']
         short_url = request.form['short_url']
+        password = request.form['password']
         
         existing_url = URL.query.filter_by(short_url=short_url).first()
         if existing_url and existing_url.id != url.id:
@@ -167,42 +170,12 @@ def edit_url(url_id):
         else:
             url.original_url = original_url
             url.short_url = short_url
+            url.set_password(password)
             db.session.commit()
             flash('URL updated successfully.', 'success')
             return redirect(url_for('dashboard'))
     
     return render_template('edit_url.html', url=url)
-
-@app.cli.command("migrate_passwords")
-def migrate_passwords():
-    with app.app_context():
-        users = User.query.all()
-        for user in users:
-            if hasattr(user, 'password') and user.password:
-                user.set_password(user.password)
-        db.session.commit()
-    print("Passwords migrated successfully.")
-
-def init_db():
-    db_path = os.path.join(app.root_path, 'urls.db')
-    if not os.path.exists(db_path):
-        with app.app_context():
-            db.create_all()
-            print("Database created.")
-    else:
-        print("Database already exists.")
-        # Add api_key column if it doesn't exist
-        with app.app_context():
-            if not hasattr(User, 'api_key'):
-                with db.engine.connect() as conn:
-                    conn.execute(text('ALTER TABLE user ADD COLUMN api_key VARCHAR(36) UNIQUE'))
-                    conn.commit()
-                print("Added api_key column to User table.")
-
-@app.cli.command("init-db")
-def init_db_command():
-    init_db()
-    print("Initialized the database.")
 
 @app.route('/reset_api_key')
 @login_required
@@ -239,31 +212,52 @@ def download_sharex_config():
 @app.route('/api/shorten', methods=['POST'])
 def api_shorten_url():
     auth_header = request.headers.get('Authorization')
-    if not auth_header:
-        return jsonify({"error": "No API key provided"}), 401
-    
-    user = User.query.filter_by(api_key=auth_header).first()
-    if not user:
-        return jsonify({"error": "Invalid API key"}), 401
-    
-    data = request.json
+    if auth_header:
+        user = User.query.filter_by(api_key=auth_header).first()
+        if not user:
+            return jsonify({"error": "Invalid API key"}), 401
+    else:
+        user = User.query.get(session.get('user_id', 1))
+
+    data = request.json or request.form
     if not data or 'url' not in data:
         return jsonify({"error": "No URL provided"}), 400
-    
+
+    return create_short_url(data, user)
+
+def create_short_url(data, user=None):
     original_url = data['url']
+    custom_vanity = data.get('vanity')
+    password = data.get('password')
+
     if not original_url.startswith(('http://', 'https://')):
         original_url = 'https://' + original_url
-    
-    short_url = generate_short_url()
-    new_url = URL(original_url=original_url, short_url=short_url, user_id=user.id)
+
+    if custom_vanity:
+        if URL.query.filter_by(short_url=custom_vanity).first():
+            return jsonify({"error": "Custom vanity URL is already in use"}), 400
+        short_url = custom_vanity
+    else:
+        short_url = generate_short_url()
+
+    user_id = session.get('user_id', 1)
+
+    new_url = URL(original_url=original_url, short_url=short_url, user_id=user_id)
+    if password:
+        new_url.set_password(password)
     db.session.add(new_url)
     db.session.commit()
-    
-    return jsonify({
-        "original_url": original_url,
-        "short_url": url_for('redirect_to_url', short_url=short_url, _external=True)
-    }), 201
+
+    short_url_full = url_for('redirect_to_url', short_url=short_url, _external=True)
+    if request.is_json:
+        return jsonify({
+            "original_url": original_url,
+            "short_url": short_url_full
+        }), 201
+    else:
+        return render_template('index.html', short_url=short_url_full)
 
 if __name__ == '__main__':
-    init_db()
+    with app.app_context():
+        db.create_all()
     app.run(debug=True)

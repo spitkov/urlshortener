@@ -41,15 +41,33 @@ input, .form-control {
     border-radius: 5px;
     width: 100%;
     backdrop-filter: blur(8px);
-    color: white;
+    color: white !important; /* Force white color */
     text-align: center;
     transition: background-color 0.3s;
     padding: 12px;
     margin-bottom: 15px;
 }
 
+/* Make URL and custom vanity inputs wider */
+#url, #vanity, #password {
+    width: 100%;
+    max-width: 800px; /* Increased from 600px to 800px */
+}
+
+input::placeholder, .form-control::placeholder {
+    color: rgba(255, 255, 255, 0.7); /* Slightly transparent white for placeholders */
+}
+
 input:hover, .form-control:hover {
     background-color: rgba(26, 26, 26, 0.41);
+}
+
+/* Ensure text remains white when input is focused */
+input:focus, .form-control:focus {
+    color: white !important;
+    background-color: rgba(26, 26, 26, 0.41);
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.5);
 }
 
 .btn {
@@ -175,4 +193,25 @@ input:hover, .form-control:hover {
     .navbar-brand, .nav-link {
         font-size: 16px;
     }
+}
+
+.api-key-container {
+    position: relative;
+    overflow: hidden;
+}
+
+.api-key-input {
+    background-color: rgba(0, 0, 0, 0.2) !important;
+    color: transparent !important;
+    text-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
+    transition: all 0.3s ease;
+}
+
+.api-key-input:hover, .api-key-input:focus {
+    color: white !important;
+    text-shadow: none;
+}
+
+.api-key-input::selection {
+    background-color: rgba(255, 255, 255, 0.3);
 }

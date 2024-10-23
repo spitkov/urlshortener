@@ -10,16 +10,17 @@
         <div class="mb-3">
             <button type="button" class="btn btn-link text-info p-0" id="show-options">More options</button>
         </div>
-        <div class="mb-3 d-none" id="vanity-option">
+        <div class="mb-3 d-none" id="more-options">
             <input type="text" class="form-control" id="vanity" name="vanity" placeholder="Custom short URL (optional)">
+            <input type="password" class="form-control mt-2" id="password" name="password" placeholder="Password protect URL (optional)">
         </div>
         <button type="submit" class="btn">Shorten</button>
     </form>
     {% if short_url %}
     <div class="mt-4">
         <h3>Your shortened URL:</h3>
-        <a href="{{ url_for('redirect_to_url', short_url=short_url, _external=True) }}" class="text-info">
-            {{ url_for('redirect_to_url', short_url=short_url, _external=True) }}
+        <a href="{{ short_url }}" class="text-info">
+            {{ short_url }}
         </a>
     </div>
     {% endif %}
@@ -29,7 +30,7 @@
 {% block scripts %}
 <script>
 document.getElementById('show-options').addEventListener('click', function() {
-    document.getElementById('vanity-option').classList.toggle('d-none');
+    document.getElementById('more-options').classList.toggle('d-none');
 });
 </script>
 {% endblock %}

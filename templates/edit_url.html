@@ -1,17 +1,23 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h2 class="mb-4">Edit URL</h2>
-<form method="POST">
-    <div class="mb-3">
-        <label for="original_url" class="form-label">Original URL</label>
-        <input type="url" class="form-control bg-dark text-light" id="original_url" name="original_url" value="{{ url.original_url }}" required>
-    </div>
-    <div class="mb-3">
-        <label for="short_url" class="form-label">Short URL</label>
-        <input type="text" class="form-control bg-dark text-light" id="short_url" name="short_url" value="{{ url.short_url }}" required>
-    </div>
-    <button type="submit" class="btn btn-primary">Update URL</button>
-    <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">Cancel</a>
-</form>
+<div class="box">
+    <h2 class="mb-4">Edit URL</h2>
+    <form method="POST">
+        <div class="mb-3">
+            <label for="original_url" class="form-label">Original URL</label>
+            <input type="url" class="form-control" id="original_url" name="original_url" value="{{ url.original_url }}" required>
+        </div>
+        <div class="mb-3">
+            <label for="short_url" class="form-label">Short URL</label>
+            <input type="text" class="form-control" id="short_url" name="short_url" value="{{ url.short_url }}" required>
+        </div>
+        <div class="mb-3">
+            <label for="password" class="form-label">Password (leave blank to remove)</label>
+            <input type="password" class="form-control" id="password" name="password">
+        </div>
+        <button type="submit" class="btn btn-primary">Update URL</button>
+        <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
 {% endblock %}
