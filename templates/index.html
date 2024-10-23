@@ -2,28 +2,30 @@
 
 {% block content %}
 <div class="box">
-    <h2>Shorten Your URL</h2>
-    <form method="POST">
-        <div class="mb-3">
-            <input type="text" class="form-control" id="url" name="url" placeholder="Enter URL to shorten" required>
+    <div class="content-wrapper">
+        <h2>Shorten Your URL</h2>
+        <form method="POST" class="w-100">
+            <div class="mb-3">
+                <input type="text" class="form-control wide-input" id="url" name="url" placeholder="Enter URL to shorten" required>
+            </div>
+            <div class="mb-3">
+                <button type="button" class="btn btn-link text-info p-0" id="show-options">More options</button>
+            </div>
+            <div class="mb-3 d-none" id="more-options">
+                <input type="text" class="form-control wide-input" id="vanity" name="vanity" placeholder="Custom short URL (optional)">
+                <input type="password" class="form-control wide-input mt-2" id="password" name="password" placeholder="Password protect URL (optional)">
+            </div>
+            <button type="submit" class="btn">Shorten</button>
+        </form>
+        {% if short_url %}
+        <div class="mt-4 w-100">
+            <h3>Your shortened URL:</h3>
+            <a href="{{ short_url }}" class="text-info wide-input d-block">
+                {{ short_url }}
+            </a>
         </div>
-        <div class="mb-3">
-            <button type="button" class="btn btn-link text-info p-0" id="show-options">More options</button>
-        </div>
-        <div class="mb-3 d-none" id="more-options">
-            <input type="text" class="form-control" id="vanity" name="vanity" placeholder="Custom short URL (optional)">
-            <input type="password" class="form-control mt-2" id="password" name="password" placeholder="Password protect URL (optional)">
-        </div>
-        <button type="submit" class="btn">Shorten</button>
-    </form>
-    {% if short_url %}
-    <div class="mt-4">
-        <h3>Your shortened URL:</h3>
-        <a href="{{ short_url }}" class="text-info">
-            {{ short_url }}
-        </a>
+        {% endif %}
     </div>
-    {% endif %}
 </div>
 {% endblock %}
 

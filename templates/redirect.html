@@ -5,7 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Redirecting...</title>
     <meta property="og:title" content="Shortened URL by {{ uploader }}">
+    {% if is_password_protected %}
+    <meta property="og:description" content="This is a password-protected shortened link. You'll need a password to access the original URL.">
+    {% else %}
     <meta property="og:description" content="This is a shortened link. Click to visit the original URL.">
+    {% endif %}
     <meta property="og:url" content="{{ url_for('redirect_to_url', short_url=url.short_url, _external=True, _scheme='https') }}">
     <meta property="og:type" content="website">
     <meta http-equiv="refresh" content="0;url={{ url.original_url }}">

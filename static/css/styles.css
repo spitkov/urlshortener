@@ -105,6 +105,19 @@ input:focus, .form-control:focus {
     margin: 40px auto;
 }
 
+.content-wrapper {
+    width: 100%;
+    max-width: 800px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.wide-input {
+    width: 100%;
+    max-width: 100%;
+}
+
 .navbar {
     background-color: rgba(0, 0, 0, 0.2);
     backdrop-filter: blur(10px);
@@ -214,4 +227,15 @@ input:focus, .form-control:focus {
 
 .api-key-input::selection {
     background-color: rgba(255, 255, 255, 0.3);
+}
+
+@media (min-width: 768px) {
+    .box {
+        padding: 60px;
+    }
+
+    .wide-input {
+        font-size: 20px;
+        padding: 15px;
+    }
 }

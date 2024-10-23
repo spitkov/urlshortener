@@ -80,15 +80,16 @@ def redirect_to_url(short_url):
     url = URL.query.filter_by(short_url=short_url).first_or_404()
     user = User.query.get(url.user_id)
     uploader = user.username if user else "Anonymous"
+    is_password_protected = bool(url.password_hash)
     
-    if url.password_hash:
+    if is_password_protected:
         if request.method == 'POST':
             if url.check_password(request.form.get('password')):
-                return render_template('redirect.html', url=url, uploader=uploader)
+                return render_template('redirect.html', url=url, uploader=uploader, is_password_protected=is_password_protected)
             else:
                 flash('Incorrect password', 'danger')
         return render_template('password_prompt.html', short_url=short_url)
-    return render_template('redirect.html', url=url, uploader=uploader)
+    return render_template('redirect.html', url=url, uploader=uploader, is_password_protected=is_password_protected)
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
