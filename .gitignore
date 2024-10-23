@@ -2,6 +2,7 @@
 *.db
 urls.db
 instance/*
+
 # Python cache files
 __pycache__/
 *.py[cod]
