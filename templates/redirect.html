@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Redirecting...</title>
+    <meta property="og:title" content="Shortened URL by {{ uploader }}">
+    <meta property="og:description" content="This is a shortened link. Click to visit the original URL.">
+    <meta property="og:url" content="{{ url_for('redirect_to_url', short_url=url.short_url, _external=True, _scheme='https') }}">
+    <meta property="og:type" content="website">
+    <meta http-equiv="refresh" content="0;url={{ url.original_url }}">
+</head>
+<body>
+    <p>Redirecting to <a href="{{ url.original_url }}">{{ url.original_url }}</a>...</p>
+</body>
+</html>

@@ -78,14 +78,17 @@ def index():
 @app.route('/<short_url>', methods=['GET', 'POST'])
 def redirect_to_url(short_url):
     url = URL.query.filter_by(short_url=short_url).first_or_404()
+    user = User.query.get(url.user_id)
+    uploader = user.username if user else "Anonymous"
+    
     if url.password_hash:
         if request.method == 'POST':
             if url.check_password(request.form.get('password')):
-                return redirect(url.original_url)
+                return render_template('redirect.html', url=url, uploader=uploader)
             else:
                 flash('Incorrect password', 'danger')
         return render_template('password_prompt.html', short_url=short_url)
-    return redirect(url.original_url)
+    return render_template('redirect.html', url=url, uploader=uploader)
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -248,7 +251,7 @@ def create_short_url(data, user=None):
     db.session.add(new_url)
     db.session.commit()
 
-    short_url_full = url_for('redirect_to_url', short_url=short_url, _external=True)
+    short_url_full = url_for('redirect_to_url', short_url=short_url, _external=True, _scheme='https')
     if request.is_json:
         return jsonify({
             "original_url": original_url,
@@ -260,4 +263,4 @@ def create_short_url(data, user=None):
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
-    app.run(debug=True)
+    app.run(debug=True,host='0.0.0.0',port=6601)
