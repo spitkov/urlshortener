@@ -1,34 +1,20 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <title>Register</title>
-    <style>
-        body {
-            background-color: #212529; /* Dark background */
-            height: 100vh; /* Full height */
-            display: flex; /* Flexbox for centering */
-            align-items: center; /* Center vertically */
-            justify-content: center; /* Center horizontally */
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h2 class="text-light">Register</h2>
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <h2 class="mb-4">Register</h2>
         <form method="POST">
-            <div class="form-group">
-                <label for="username" class="text-light">Username</label>
-                <input type="text" name="username" class="form-control" required>
+            <div class="mb-3">
+                <label for="username" class="form-label">Username</label>
+                <input type="text" class="form-control bg-dark text-light" id="username" name="username" required>
             </div>
-            <div class="form-group">
-                <label for="password" class="text-light">Password</label>
-                <input type="password" name="password" class="form-control" required>
+            <div class="mb-3">
+                <label for="password" class="form-label">Password</label>
+                <input type="password" class="form-control bg-dark text-light" id="password" name="password" required>
             </div>
             <button type="submit" class="btn btn-primary">Register</button>
         </form>
     </div>
-</body>
-</html>
+</div>
+{% endblock %}
