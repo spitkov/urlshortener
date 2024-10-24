@@ -239,12 +239,13 @@ def create_short_url(data, user=None):
 
     if custom_vanity:
         if URL.query.filter_by(short_url=custom_vanity).first():
-            return jsonify({"error": "Custom vanity URL is already in use"}), 400
+            flash('Custom vanity URL is already in use. Please choose another one.', 'danger')
+            return render_template('index.html', error=True)
         short_url = custom_vanity
     else:
         short_url = generate_short_url()
 
-    user_id = session.get('user_id', 1)
+    user_id = user.id if user else 1
 
     new_url = URL(original_url=original_url, short_url=short_url, user_id=user_id)
     if password:
@@ -259,9 +260,10 @@ def create_short_url(data, user=None):
             "short_url": short_url_full
         }), 201
     else:
+        flash('URL shortened successfully!', 'success')
         return render_template('index.html', short_url=short_url_full)
 
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
-    app.run(debug=True,host='0.0.0.0',port=6601)
+    app.run(debug=True, host='0.0.0.0', port=6601)

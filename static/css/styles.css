@@ -121,13 +121,53 @@ input:focus, .form-control:focus {
 .navbar {
     background-color: rgba(0, 0, 0, 0.2);
     backdrop-filter: blur(10px);
-    padding: 15px 0;
+    padding: 10px 0;
     width: 100%;
 }
 
 .navbar-brand, .nav-link {
     color: white !important;
-    font-size: 18px;
+    font-size: 16px;
+    padding: 5px 10px !important;
+}
+
+.navbar-toggler {
+    border-color: rgba(255, 255, 255, 0.5);
+    padding: 4px 8px;
+}
+
+.navbar-toggler-icon {
+    width: 1.2em;
+    height: 1.2em;
+}
+
+@media (max-width: 991px) {
+    .navbar-nav {
+        background-color: rgba(0, 0, 0, 0.8);
+        padding: 10px;
+        border-radius: 5px;
+    }
+
+    .nav-link {
+        padding: 8px 12px !important;
+    }
+    
+    .navbar-brand {
+        font-size: 18px;
+    }
+}
+
+@media (max-width: 575px) {
+    .navbar-brand, .nav-link {
+        font-size: 14px;
+    }
+    
+    .navbar-brand {
+        max-width: 50%;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
 }
 
 .table {
